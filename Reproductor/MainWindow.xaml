@@ -15,6 +15,6 @@
         <TextBlock x:Name="lblTiempoActual" HorizontalAlignment="Left" Margin="10,67,0,0" TextWrapping="Wrap" Text="00:00:00" VerticalAlignment="Top"/>
         <TextBlock x:Name="lblTiempoTotal" HorizontalAlignment="Left" Margin="342,67,0,0" TextWrapping="Wrap" Text="00:00:00" VerticalAlignment="Top"/>
         <Slider x:Name="sldTiempo" HorizontalAlignment="Left" Margin="10,88,0,0" VerticalAlignment="Top" Height="29" Width="382"/>
-
+        <ComboBox x:Name="cbDispositivoSalida" HorizontalAlignment="Left" Margin="10,153,0,0" VerticalAlignment="Top" Width="437"/>
     </Grid>
 </Window>
