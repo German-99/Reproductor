@@ -22,6 +22,7 @@ using System.Windows.Threading;
 
 namespace Reproductor
 {
+
     /// <summary>
     /// Lógica de interacción para MainWindow.xaml
     /// </summary>
@@ -29,11 +30,13 @@ namespace Reproductor
     {
 
         DispatcherTimer timer;
+
         //Lector de archivos
         AudioFileReader reader;
-        //comunicacion con la tarjeta de audio
-        //exclusivo salidas
+        //Comunicacion con la tarjeta de audio
+        //Exclusivo salidas
         WaveOut output;
+        bool dragging = false;
 
         public MainWindow()
         {
@@ -50,7 +53,12 @@ namespace Reproductor
 
         private void Timer_Tick(object sender, EventArgs e)
         {
-            lblTiempoActual.Text = reader.CurrentTime.ToString().Substring(0, 0);
+            lblTiempoActual.Text = reader.CurrentTime.ToString().Substring(0, 8);
+
+            if (!dragging)
+            {
+                sldTiempo.Value = reader.CurrentTime.TotalSeconds;
+            }
         }
 
         void ListarDispositivoSalida()
@@ -68,11 +76,11 @@ namespace Reproductor
         private void BtnExaminar_Click(object sender, RoutedEventArgs e)
         {
             OpenFileDialog openFileDialog = new OpenFileDialog();
+
             if (openFileDialog.ShowDialog() == true)
             {
                 txtRutaArchivo.Text = openFileDialog.FileName;
                 btnReproducir.IsEnabled = true;
-
             }
         }
 
@@ -80,7 +88,7 @@ namespace Reproductor
         {
             if (output != null && output.PlaybackState == PlaybackState.Paused)
             {
-                //retomo reproduccion
+                //Retomo reproduccion
                 output.Play();
                 btnReproducir.IsEnabled = false;
                 btnPausa.IsEnabled = true;
@@ -102,15 +110,20 @@ namespace Reproductor
                 btnDetener.IsEnabled = true;
 
                 lblTiempoTotal.Text = reader.TotalTime.ToString().Substring(0, 8);
+                lblTiempoActual.Text = reader.CurrentTime.ToString().Substring(0, 8);
+
+                sldTiempo.Maximum = reader.TotalTime.TotalSeconds;
+                sldTiempo.Value = reader.CurrentTime.TotalSeconds;
+
+                timer.Start();
             }
         }
 
         private void Output_PlaybackStopped(object sender, StoppedEventArgs e)
         {
-            timer.Stop();
             reader.Dispose();
             output.Dispose();
-            
+            timer.Stop();
         }
 
         private void BtnDetener_Click(object sender, RoutedEventArgs e)
@@ -134,5 +147,20 @@ namespace Reproductor
                 btnDetener.IsEnabled = true;
             }
         }
+
+        private void SldTiempo_DragStarted(object sender, System.Windows.Controls.Primitives.DragStartedEventArgs e)
+        {
+            dragging = true;
+        }
+
+        private void SldTiempo_DragCompleted(object sender, System.Windows.Controls.Primitives.DragCompletedEventArgs e)
+        {
+            dragging = false; 
+            if (reader != null && output != null && output.PlaybackState != PlaybackState.Stopped)
+            {
+                reader.CurrentTime = TimeSpan.FromSeconds(sldTiempo.Value);
+            }
+        }
+
     }
 }
