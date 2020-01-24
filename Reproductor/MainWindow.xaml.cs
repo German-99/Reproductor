@@ -162,5 +162,61 @@ namespace Reproductor
             }
         }
 
+        private void BtnReproducir_Click_1(object sender, RoutedEventArgs e)
+        {
+            if (output != null && output.PlaybackState == PlaybackState.Paused)
+            {
+                //Retomo reproduccion
+                output.Play();
+                btnReproducir.IsEnabled = false;
+                btnPausa.IsEnabled = true;
+                btnDetener.IsEnabled = true;
+            }
+            else
+         if (txtRutaArchivo.Text != null && txtRutaArchivo.Text != string.Empty)
+            {
+                reader = new AudioFileReader(txtRutaArchivo.Text);
+                output = new WaveOut();
+                output.DeviceNumber = cbDispositivoSalida.SelectedIndex;
+                output.PlaybackStopped += Output_PlaybackStopped;
+
+                output.Init(reader);
+                output.Play();
+
+                btnReproducir.IsEnabled = false;
+                btnPausa.IsEnabled = true;
+                btnDetener.IsEnabled = true;
+
+                lblTiempoTotal.Text = reader.TotalTime.ToString().Substring(0, 8);
+                lblTiempoActual.Text = reader.CurrentTime.ToString().Substring(0, 8);
+
+                sldTiempo.Maximum = reader.TotalTime.TotalSeconds;
+                sldTiempo.Value = reader.CurrentTime.TotalSeconds;
+
+                timer.Start();
+            }
+        }
+
+        private void BtnPausa_Click_1(object sender, RoutedEventArgs e)
+        {
+            if (output != null)
+            {
+                output.Pause();
+                btnReproducir.IsEnabled = true;
+                btnPausa.IsEnabled = false;
+                btnDetener.IsEnabled = true;
+            }
+        }
+
+        private void BtnDetener_Click_1(object sender, RoutedEventArgs e)
+        {
+            if (output != null)
+            {
+                output.Stop();
+                btnReproducir.IsEnabled = true;
+                btnPausa.IsEnabled = false;
+                btnDetener.IsEnabled = false;
+            }
+        }
     }
 }
