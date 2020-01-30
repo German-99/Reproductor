@@ -37,7 +37,7 @@ namespace Reproductor
         //Exclusivo salidas
         WaveOut output;
         bool dragging = false;
-
+        VolumeSampleProvider volume;
         public MainWindow()
         {
             InitializeComponent();
@@ -84,40 +84,6 @@ namespace Reproductor
             }
         }
 
-        private void BtnReproducir_Click(object sender, RoutedEventArgs e)
-        {
-            if (output != null && output.PlaybackState == PlaybackState.Paused)
-            {
-                //Retomo reproduccion
-                output.Play();
-                btnReproducir.IsEnabled = false;
-                btnPausa.IsEnabled = true;
-                btnDetener.IsEnabled = true;
-            }
-            else
-            if (txtRutaArchivo.Text != null && txtRutaArchivo.Text != string.Empty)
-            {
-                reader = new AudioFileReader(txtRutaArchivo.Text);
-                output = new WaveOut();
-                output.DeviceNumber = cbDispositivoSalida.SelectedIndex;
-                output.PlaybackStopped += Output_PlaybackStopped;
-
-                output.Init(reader);
-                output.Play();
-
-                btnReproducir.IsEnabled = false;
-                btnPausa.IsEnabled = true;
-                btnDetener.IsEnabled = true;
-
-                lblTiempoTotal.Text = reader.TotalTime.ToString().Substring(0, 8);
-                lblTiempoActual.Text = reader.CurrentTime.ToString().Substring(0, 8);
-
-                sldTiempo.Maximum = reader.TotalTime.TotalSeconds;
-                sldTiempo.Value = reader.CurrentTime.TotalSeconds;
-
-                timer.Start();
-            }
-        }
 
         private void Output_PlaybackStopped(object sender, StoppedEventArgs e)
         {
@@ -126,27 +92,6 @@ namespace Reproductor
             timer.Stop();
         }
 
-        private void BtnDetener_Click(object sender, RoutedEventArgs e)
-        {
-            if (output != null)
-            {
-                output.Stop();
-                btnReproducir.IsEnabled = true;
-                btnPausa.IsEnabled = false;
-                btnDetener.IsEnabled = false;
-            }
-        }
-
-        private void BtnPausa_Click(object sender, RoutedEventArgs e)
-        {
-            if (output != null)
-            {
-                output.Pause();
-                btnReproducir.IsEnabled = true;
-                btnPausa.IsEnabled = false;
-                btnDetener.IsEnabled = true;
-            }
-        }
 
         private void SldTiempo_DragStarted(object sender, System.Windows.Controls.Primitives.DragStartedEventArgs e)
         {
@@ -176,12 +121,16 @@ namespace Reproductor
          if (txtRutaArchivo.Text != null && txtRutaArchivo.Text != string.Empty)
             {
                 reader = new AudioFileReader(txtRutaArchivo.Text);
+                volume = new VolumeSampleProvider(reader);
+                volume.Volume = (float)(sldvolumen.Value);
                 output = new WaveOut();
                 output.DeviceNumber = cbDispositivoSalida.SelectedIndex;
                 output.PlaybackStopped += Output_PlaybackStopped;
 
-                output.Init(reader);
+                output.Init(volume);
                 output.Play();
+
+                output.Volume = (float)(sldvolumen.Value);
 
                 btnReproducir.IsEnabled = false;
                 btnPausa.IsEnabled = true;
@@ -216,6 +165,15 @@ namespace Reproductor
                 btnReproducir.IsEnabled = true;
                 btnPausa.IsEnabled = false;
                 btnDetener.IsEnabled = false;
+            }
+        }
+
+        private void Sldvolumen_ValueChanged(object sender, RoutedPropertyChangedEventArgs<double> e)
+        {
+            if(output != null && output.PlaybackState != PlaybackState.Stopped)
+            {
+                //output.Volume = (float)(sldvolumen.Value);
+                volume.Volume = (float)(sldvolumen.Value);
             }
         }
     }

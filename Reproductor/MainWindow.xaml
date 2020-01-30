@@ -5,7 +5,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:Reproductor"
         mc:Ignorable="d"
-        Title="MainWindow" Height="177.835" Width="413.402">
+        Title="MainWindow" Height="213.162" Width="460.505">
     <Grid>
         <TextBox x:Name="txtRutaArchivo" HorizontalAlignment="Left" Height="23" TextWrapping="Wrap" VerticalAlignment="Top" Width="303"/>
         <Button x:Name="btnExaminar" Content="Examinar" HorizontalAlignment="Left" Margin="317,4,0,0" VerticalAlignment="Top" Width="75" Click="BtnExaminar_Click"/>
@@ -18,5 +18,8 @@
                 Thumb.DragStarted="SldTiempo_DragStarted"
                 Thumb.DragCompleted="SldTiempo_DragCompleted"/>
         <ComboBox x:Name="cbDispositivoSalida" HorizontalAlignment="Left" Margin="10,153,0,0" VerticalAlignment="Top" Width="437"/>
+        <Slider x:Name="sldvolumen" HorizontalAlignment="Left" Margin="413,48,0,0" VerticalAlignment="Top" Width="18" Orientation="Vertical" Height="86" Maximum="1" LargeChange="0.1" SmallChange="0.01" ValueChanged="Sldvolumen_ValueChanged"/>
+        <Label Content="Volumen:" HorizontalAlignment="Left" Margin="392,22,0,0" VerticalAlignment="Top" Width="56"/>
+        
     </Grid>
 </Window>
